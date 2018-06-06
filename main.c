@@ -76,7 +76,7 @@ void alugueres(){
     return;
 }
 
-void main(int argc, char** argv) {
+int main(int argc, char** argv) {
    pgui guitarra = NULL;
    
    guitarra = converte(guitarra);
@@ -105,61 +105,33 @@ void main(int argc, char** argv) {
         desconverte(guitarra);
         free(guitarra);
        
-    return;
+    return 0;
 }
 
 pgui adicionaGuitarra(pgui guitarra){
-    int tam, i, ID, precoDia, estado, valor;
-    char nome[MAX];
+    int tam = guitarra[0].numGuitarras;
+    tam = tam + 1; // Tamanho do novo array
+    guitarra=realloc(guitarra, tam * sizeof(pgui));
+    tam = tam - 1; // Posiçao do endereço    
     
-    tam = guitarra[0].numGuitarras;
         printf("\nID: \n");
-        scanf("%d", &ID);
-        for(i=0;i<tam;i++){
-                if(ID == guitarra[i].ID){
-                    printf("ID existente");
-                    return guitarra;
-                }
-            }
+        scanf("%d", &guitarra[tam].ID);
         printf("Preco p/Dia: \n");
-        scanf("%d", &precoDia);
-            if(precoDia<=0){
-                printf("Preco Invalido");
-                return guitarra;
-            }
+        scanf("%d", &guitarra[tam].precoDia);
         printf("Valor: \n");
-        scanf("%d", &valor);
-         if(valor<=0){
-                printf("Valor Invalido");
-                return guitarra;
-            }
+        scanf("%d", &guitarra[tam].valor);
         printf("Estado: \n");
-        scanf("%d", &estado);  
-         if(estado != 0 && estado != 1){
-                printf("Estado Invalido");
-                return guitarra;
-         }
+        scanf("%d", &guitarra[tam].estado);
         printf("Nome: \n");
-        scanf(" %[^\n]", nome);
-
-
-            tam = tam + 1; // Tamanho do novo array
-            guitarra=realloc(guitarra, sizeof(pgui)); 
-                    guitarra[tam].ID = ID;
-                    guitarra[tam].estado = estado;
-                    strcpy(guitarra[tam].nome, nome);
-                    guitarra[tam].precoDia = precoDia;
-                    guitarra[tam].valor = valor;               
-          
+        scanf(" %[^\n]", &guitarra[tam].nome);
+   
         guitarra[0].numGuitarras = tam+1;
-           
-        return guitarra;
 }
 
 
 pgui converte(pgui guitarra){  
     FILE *fin;
-    int tam,i;
+    int numGuitarras = 1,i;
     char ch;
     
    fin=fopen("Guitarras.txt", "r");
@@ -173,16 +145,19 @@ pgui converte(pgui guitarra){
       ch = fgetc(fin);
       if(ch == '\n')
       {
-        tam++;
+        numGuitarras++;
       }
     }
-
+   
+   printf("%d linhas\n",numGuitarras);
+   
     fseek(fin, 0, SEEK_SET);//ponteiro volta ao inicio
-    guitarra = malloc(tam * sizeof(pgui));
-  
-     for(i=0;i<tam;i++){
+    guitarra = malloc(numGuitarras * sizeof(pgui));
+   
+   
+     for(i=0;i<numGuitarras;i++){
      fscanf(fin, "%d %d %d %d %[^\n]", &guitarra[i].ID, &guitarra[i].precoDia, &guitarra[i].valor, &guitarra[i].estado, &guitarra[i].nome);  
-     guitarra[i].numGuitarras = tam ;
+     guitarra[i].numGuitarras = numGuitarras;
      }
     
    fclose(fin);
@@ -191,7 +166,7 @@ pgui converte(pgui guitarra){
 }
 
 void desconverte(pgui guitarra){
-    int tam,i;
+    int numGuitarras,i;
      FILE *fout;
     
     fout=fopen("Guitarras.txt", "w");
@@ -200,12 +175,13 @@ void desconverte(pgui guitarra){
         return ;
     } 
     
-    tam = guitarra[0].numGuitarras;
+    numGuitarras = guitarra[0].numGuitarras;
      
-       for(i=0;i<tam;i++){
+       for(i=0;i<numGuitarras;i++){
      fprintf(fout, "%d %d %d %d %s\n", guitarra[i].ID, guitarra[i].precoDia, guitarra[i].valor, guitarra[i].estado, guitarra[i].nome);  
      }
-   
+        
+      
         fclose(fout);
         return;
 }
